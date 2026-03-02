@@ -1,0 +1,60 @@
+Name		DEC2650D;
+Partno		KF010002;
+Date		24/07/28;
+Revision	06;
+Designer	efialtes_htn;
+Company		EFIALTES_HTN Design;
+Assembly	System 19-6 SCN2650A;
+Location	U06;
+Device		G16V8A;
+
+/* *************************************************************** */
+/* System 19-6 decorder Glue logic				   */
+/*  								   */
+/* *************************************************************** */
+/* target device	GAL18V8 any speed rank is OK		   */
+/* *************************************************************** */
+/* *************************************************************** */
+/** inputs	**/
+Pin 1	=	CLK;
+Pin 2	=	OPREQ;
+Pin 3   =	RW;
+Pin 4   =	WRP;
+Pin 5  =	MIO;
+Pin 6	=	A14;
+Pin 7	=	A13;
+Pin 8	=	A7;
+Pin 9	=	!RES;
+Pin 11	=	!OE;
+
+/** outputs	**/
+Pin 12	=	BOOTEND;
+Pin 13	=	!SEREN;
+Pin 14	=	!ROMEN;
+Pin 15	=	!RAMEN; 
+Pin 16	=	125M;
+Pin 17	=	!RD; 
+Pin 18	=	25M;
+Pin 19	=	!WR; 
+
+/* logic equations	*/
+ROMEN	= (!A14 & OPREQ & !RW & MIO & !BOOTEND);
+RAMEN	= (!A14 & OPREQ & RW & MIO)
+	  # (!A14 & OPREQ & !RW & MIO & BOOTEND)
+          # (A14 & OPREQ & MIO);
+/* Memory read or non-extended IO read */
+RD	= OPREQ & !RW & (MIO # A13);
+WR	= OPREQ & RW & WRP & (MIO # A13);
+SEREN	= OPREQ & !MIO & A13 & !A7;
+25M.d	= !25M;
+125M.d	= (!125M & 25M) # (125M & !25M);
+BOOTEND.d = (!RES & OPREQ & RW & !MIO & WRP & A14 & A13)
+	# (!RES & BOOTEND);
+
+
+ROMEN.oe = 'b'1;
+RAMEN.oe = 'b'1;
+RD.oe = 'b'1;
+WR.oe = 'b'1;
+SEREN.oe = 'b'1;
+
